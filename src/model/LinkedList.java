@@ -4,8 +4,7 @@ public class LinkedList {
     private Node head;
     private Node tail;
 
-    public void addNodeAtTail(Data data){
-        Node node = new Node(data);
+    public void addNodeAtTail(Node node){
         if(head == null){
             head = node;
         } else {
@@ -15,20 +14,26 @@ public class LinkedList {
         tail=node;
     }
 
-    public Node findNode(int[] pos){
-        return findNode(head, pos);
-    }
-
-    private Node findNode(Node pointer, int[] pos) {
-        if (pointer != null) {
-            int[] nodePos = pointer.getData().getPosition();
+    public Node findNode(int[] pos) {
+        Node pointer = head;
+        while (pointer != null) {
+            int[] nodePos = pointer.getPosition();
             if (nodePos[0] == pos[0] && nodePos[1] == pos[1]) {
                 return pointer;
-            } else {
-                return findNode(pointer.getNext(), pos);
             }
+            pointer = pointer.getNext();
         }
         return null;
+    }
+
+
+    public void clear() {
+        while (head != null) {
+            Node next = head.getNext();
+            head.setNext(null);
+            head = next;
+        }
+        tail = null;
     }
 
     public Node getHead() {

@@ -51,10 +51,8 @@ public class Main {
     public void newGame(){
         System.out.println("Enter nickname:");
         String nickname = sc.nextLine();
-        String msg = controller.newGame(nickname);
-        if (!msg.equals("Error: nickname already exists.")){
-            gameOptions();
-        }
+        controller.newGame(nickname);
+        gameOptions();
     }
 
     public void gameOptions(){
@@ -109,7 +107,8 @@ public class Main {
     }
 
     public void simulate(){
-
+        String msg = controller.simulate();
+        System.out.println(msg);
     }
 
     public void viewScore(){

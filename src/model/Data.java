@@ -1,28 +1,17 @@
 package model;
 
 public class Data {
-
-    private int[] position;
-    private String character;
-
-    public Data(int[] position) {
-        this.position = position;
-        character = "X";
+    private Node findNode(Node pointer, int[] pos) {
+        if (pointer != null) {
+            int[] nodePos = pointer.getPosition();
+            if (nodePos[0] == pos[0] && nodePos[1] == pos[1]) {
+                return pointer;
+            } else {
+                return findNode(pointer.getNext(), pos);
+            }
+        }
+        return null;
     }
 
-    public int[] getPosition() {
-        return position;
-    }
 
-    public void setPosition(int[] position) {
-        this.position = position;
-    }
-
-    public String getCharacter() {
-        return character;
-    }
-
-    public void setCharacter(String character) {
-        this.character = character;
-    }
 }

@@ -1,14 +1,17 @@
 package model;
 
 public class Node {
+
     private Data data;
-
     private Node next;
-
     private Node previous;
+    private int[] position;
+    private String character;
 
-    public Node(Data data) {
-        this.data = data;
+
+    public Node(int[] position) {
+        this.position = position;
+        character = "X";
     }
 
     public Data getData() {
@@ -33,5 +36,21 @@ public class Node {
 
     public void setPrevious(Node previous) {
         this.previous = previous;
+    }
+
+    public int[] getPosition() {
+        return position;
+    }
+
+    public void setPosition(int[] position) {
+        this.position = position;
+    }
+
+    public String getCharacter() {
+        return character;
+    }
+
+    public void setCharacter(String character) {
+        this.character = character;
     }
 }
