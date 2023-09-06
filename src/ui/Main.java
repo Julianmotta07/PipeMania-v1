@@ -2,7 +2,6 @@ package ui;
 import model.BoardController;
 import java.util.Scanner;
 
-
 public class Main {
     public static Scanner sc;
     public static BoardController controller;

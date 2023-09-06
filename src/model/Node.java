@@ -2,26 +2,16 @@ package model;
 
 public class Node {
 
-    private Data data;
     private Node next;
     private Node previous;
     private int[] position;
     private String character;
 
-
     public Node(int[] position) {
         this.position = position;
         character = "X";
     }
-
-    public Data getData() {
-        return data;
-    }
-
-    public void setData(Data data) {
-        this.data = data;
-    }
-
+    
     public Node getNext() {
         return next;
     }

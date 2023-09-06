@@ -1,5 +1,6 @@
 package model;
 import java.util.*;
+
 public class BoardController {
 
     private ArrayList<User> users;
@@ -70,7 +71,7 @@ public class BoardController {
             if (node.getCharacter().equals("D") || node.getCharacter().equals("F")){
                 msg = "Error: You can't change this item";
             } else if (node.getCharacter().equals("X")){
-                currentUser.setPipesNumber(currentUser.getPipesNumber()+1);
+                currentUser.setPipesNumber(currentUser.getPipesNumber() + 1);
                 node.setCharacter(pipeType);
                 msg = "Added pipe!";
             }
@@ -79,15 +80,15 @@ public class BoardController {
     }
 
     public String simulate() {
-        if (findRoute(fountain, fountain.getCharacter())) {
+        List<String> exploredDirections = new ArrayList<>();
+        if (findRoute(fountain, fountain.getCharacter(), exploredDirections, "")) {
             return "The solution is correct";
         } else {
             return "The solution is incorrect.";
         }
     }
 
-    private boolean findRoute(Node current, String lastPipe) {
-
+    private boolean findRoute(Node current, String lastPipe, List<String> exploredDirections, String currentDirection) {
         if (current == null) {
             return false;
         }
@@ -95,58 +96,81 @@ public class BoardController {
         String currentPipe = current.getCharacter();
 
         if (currentPipe.equals("D")) {
-            return true;
+            if ((currentDirection.equals("up") || currentDirection.equals("down")) && (lastPipe.equals("||"))) {
+                return true;
+            } else if ((currentDirection.equals("left") || currentDirection.equals("right")) && (lastPipe.equals("="))) {
+                return true;
+            }
         }
 
-        if (!isValidPipe(currentPipe, lastPipe)) {
+        if (!isValidPipe(currentPipe, lastPipe, currentDirection)) {
             return false;
         }
 
-        if (current.getNext() != null){
+        String currentPos = current.getPosition()[0] + "," + current.getPosition()[1];
+        exploredDirections.add(currentPos);
+
+        boolean found = false;
+
+        if (current.getNext() != null && !found && !currentDirection.equals("left")) {
             int[] pos = {current.getPosition()[0], current.getPosition()[1] + 1};
-            if (findRoute(list.findNode(pos), currentPipe)){
-                return true;
+            String rightDirection = pos[0] + "," + pos[1];
+            if (!exploredDirections.contains(rightDirection)) {
+                found = findRoute(list.findNode(pos), currentPipe, exploredDirections, "right");
             }
         }
 
-        if (current.getPrevious() != null){
+        if (current.getPrevious() != null && !found && !currentDirection.equals("right")) {
             int[] pos = {current.getPosition()[0], current.getPosition()[1] - 1};
-            if (findRoute(list.findNode(pos), currentPipe)) {
-                return true;
+            String leftDirection = pos[0] + "," + pos[1];
+            if (!exploredDirections.contains(leftDirection)) {
+                found = findRoute(list.findNode(pos), currentPipe, exploredDirections, "left");
             }
         }
 
-        if (current.getPosition()[0] > 0) {
+        if (current.getPosition()[0] > 0 && !found && !currentDirection.equals("down")) {
             int[] pos = {current.getPosition()[0] - 1, current.getPosition()[1]};
-            if (findRoute(list.findNode(pos), currentPipe)) {
-                return true;
+            String upDirection = pos[0] + "," + pos[1];
+            if (!exploredDirections.contains(upDirection)) {
+                found = findRoute(list.findNode(pos), currentPipe, exploredDirections, "up");
             }
         }
 
-        if (current.getPosition()[0] < 7) {
+        if (current.getPosition()[0] < 7 && !found && !currentDirection.equals("up")) {
             int[] pos = {current.getPosition()[0] + 1, current.getPosition()[1]};
-            if (findRoute(list.findNode(pos), currentPipe)) {
-                return true;
+            String downDirection = pos[0] + "," + pos[1];
+            if (!exploredDirections.contains(downDirection)) {
+                found = findRoute(list.findNode(pos), currentPipe, exploredDirections, "down");
             }
         }
 
-        return false;
-
+        return found;
     }
 
-    private boolean isValidPipe(String currentPipe, String lastPipe) {
-        if (currentPipe.equals("F") && lastPipe.equals("F")){
+    private boolean isValidPipe(String currentPipe, String lastPipe, String currentDirection) {
+        if (currentPipe.equals("F") && lastPipe.equals("F")) {
             return true;
-        } else if (currentPipe.equals("=") && (lastPipe.equals("=") || lastPipe.equals("o") || lastPipe.equals("F"))) {
-            return true;
-        } else if (currentPipe.equals("||") && (lastPipe.equals("||") || lastPipe.equals("F"))) {
-            return true;
-        } else if (currentPipe.equals("o") && (lastPipe.equals("||") || lastPipe.equals("="))) {
-            return true;
+        } else if (currentPipe.equals("=")) {
+            if ((lastPipe.equals("=") || lastPipe.equals("o") || lastPipe.equals("F")) && !currentDirection.equals("up") && !currentDirection.equals("down")) {
+                return true;
+            }
+        } else if (currentPipe.equals("||")) {
+            if ((lastPipe.equals("||") || lastPipe.equals("o") || lastPipe.equals("F")) && !currentDirection.equals("right") && !currentDirection.equals("left")) {
+                return true;
+            }
+        } else if (currentPipe.equals("o")) {
+            if (currentDirection.equals("right") && (lastPipe.equals("="))) {
+                return true;
+            } else if (currentDirection.equals("left") && (lastPipe.equals("="))) {
+                return true;
+            } else if (currentDirection.equals("up") && (lastPipe.equals("||"))) {
+                return true;
+            } else if (currentDirection.equals("down") && (lastPipe.equals("||"))) {
+                return true;
+            }
         }
         return false;
     }
-
 
     public String calculateScore(){
         return "";
