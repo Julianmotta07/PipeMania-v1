@@ -7,11 +7,14 @@ public class BoardController {
     private LinkedList list;
     private User currentUser;
     private Node fountain;
-    private Node drain;
+    private Calendar startTime;
+    private Calendar finalTime;
+    private BST scoreTable;
 
     public BoardController() {
         users= new ArrayList<>();
         list = new LinkedList();
+        scoreTable = new BST();
     }
 
     public void newGame(String nickname){
@@ -23,6 +26,7 @@ public class BoardController {
             users.add(currentUser);
         }
         list.clear();
+        currentUser.setPipesNumber(0);
         for (int i = 0; i < 8; i++){
             for (int j = 0; j < 8; j++){
                 int[] pos = new int[2];
@@ -32,11 +36,14 @@ public class BoardController {
                 list.addNodeAtTail(node);
             }
         }
+        //Initialize time
+        startTime = Calendar.getInstance();
         //generate fountain and drain:
         int[] pos = new int[2];
         pos[0] = (int)(Math.random() * 8);
         pos[1] = (int)(Math.random() * 8);
         fountain = list.findNode(pos);
+        Node drain;
         do {
             pos[0] = (int)(Math.random() * 8);
             pos[1] = (int)(Math.random() * 8);
@@ -64,31 +71,47 @@ public class BoardController {
     }
 
     public String addPipe(int row, int col, String pipeType){
-        String msg = "Error: Invalid position";
+        String msg = "Added pipe!";
         int[] pos = {row, col};
         Node node = list.findNode(pos);
         if (node != null){
             if (node.getCharacter().equals("D") || node.getCharacter().equals("F")){
-                msg = "Error: You can't change this item";
-            } else if (node.getCharacter().equals("X")){
-                currentUser.setPipesNumber(currentUser.getPipesNumber() + 1);
+                msg = "Error: You can't change this item.";
+            } else {
+                if (node.getCharacter().equals("X")){
+                    currentUser.setPipesNumber(currentUser.getPipesNumber() + 1);
+                }
                 node.setCharacter(pipeType);
-                msg = "Added pipe!";
             }
         }
         return msg;
     }
 
     public String simulate() {
-        List<String> exploredDirections = new ArrayList<>();
+        String msg = "The solution is incorrect.";
+        ArrayList<String> exploredDirections = new ArrayList<>();
         if (findRoute(fountain, fountain.getCharacter(), exploredDirections, "")) {
-            return "The solution is correct";
-        } else {
-            return "The solution is incorrect.";
+            finalTime = Calendar.getInstance();
+            int seconds = calculateTime(finalTime);
+            int score = calculateScore(seconds, currentUser.getPipesNumber());
+            if (score > currentUser.getScore()){
+                currentUser.setScore(score);
+                if (!scoreTable.searchUserInBST(currentUser.getNickname())){
+                    scoreTable.addNode(currentUser);
+                } else {
+                    scoreTable.deleteNode(currentUser.getNickname());
+                    scoreTable.addNode(currentUser);
+                }
+            }
+            msg = "The solution is correct!\n";
+            msg += "Number of pipes used: " + currentUser.getPipesNumber();
+            msg += "\nTime: " + seconds + " sec.";
+            msg += "\n" + currentUser.getNickname() + ", your score was " + score;
         }
+        return msg;
     }
 
-    private boolean findRoute(Node current, String lastPipe, List<String> exploredDirections, String currentDirection) {
+    private boolean findRoute(Node current, String lastPipe, ArrayList<String> exploredDirections, String currentDirection) {
         if (current == null) {
             return false;
         }
@@ -172,8 +195,12 @@ public class BoardController {
         return false;
     }
 
-    public String calculateScore(){
-        return "";
+    private int calculateScore(int seconds, int pipesNumber){
+        return (100 - pipesNumber) * 10 - seconds;
+    }
+
+    private int calculateTime(Calendar finalTime){
+        return (int) ((finalTime.getTimeInMillis() - startTime.getTimeInMillis()) / 1000);
     }
 
     private User searchUser(String nickname){
@@ -187,6 +214,14 @@ public class BoardController {
             }
         }
         return userFound;
+    }
+
+    public String viewScores(){
+        if (scoreTable.getRoot()!= null){
+            return scoreTable.getScores();
+        } else {
+            return "There are no players in the score table yet.";
+        }
     }
 
 }

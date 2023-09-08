@@ -5,8 +5,11 @@ public class User {
     private String nickname;
     private double score;
     private int pipesNumber;
+
     public User(String nickname) {
         this.nickname = nickname;
+        pipesNumber = 0;
+        score = 0;
     }
 
 

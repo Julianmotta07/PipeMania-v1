@@ -3,8 +3,10 @@ import model.BoardController;
 import java.util.Scanner;
 
 public class Main {
+
     public static Scanner sc;
     public static BoardController controller;
+    private boolean gameOver = false;
 
     public Main() {
         controller = new BoardController();
@@ -22,7 +24,7 @@ public class Main {
             System.out.println("WELCOME TO THE MENU");
             System.out.println("--Select an option-");
             System.out.println("1: New game........");
-            System.out.println("2: View score......");
+            System.out.println("2: View scores.....");
             System.out.println("0: Exit............");
             System.out.println("-------------------");
             option = sc.nextInt();
@@ -30,11 +32,9 @@ public class Main {
             switch(option){
                 case 1:
                     newGame();
-                    System.out.println("Press Enter to return to the menu...");
-                    sc.nextLine();
                     break;
                 case 2:
-                    viewScore();
+                    viewScores();
                     System.out.println("Press Enter to return to the menu...");
                     sc.nextLine();
                     break;
@@ -48,6 +48,7 @@ public class Main {
     }
 
     public void newGame(){
+        gameOver = false;
         System.out.println("Enter nickname:");
         String nickname = sc.nextLine();
         controller.newGame(nickname);
@@ -62,7 +63,7 @@ public class Main {
             System.out.println("-Select an option-");
             System.out.println("1: Add pipe.......");
             System.out.println("2: Simulate.......");
-            System.out.println("0: Exit...........");
+            System.out.println("0: Back...........");
             System.out.println("------------------");
             option = sc.nextInt();
             sc.nextLine();
@@ -83,35 +84,57 @@ public class Main {
                     System.out.println("Invalid option, try again!");
                     sc.nextLine();
             }
-        } while (option != 0);
+        } while (option != 0 && !gameOver);
     }
 
     public void addPipe(){
-        System.out.println("Enter row:");
-        int row = sc.nextInt();
-        sc.nextLine();
-        System.out.println("Enter column:");
-        int col = sc.nextInt();
-        sc.nextLine();
-        System.out.println("Select pipe type: \n 1. = \n 2. || \n 3. o");
-        int type = sc.nextInt();
-        sc.nextLine();
-        String pipeType = switch (type) {
-            case 1 -> "=";
-            case 2 -> "||";
-            default -> "o";
-        };
+        boolean error;
+        int row, col;
+        do {
+            error = false;
+            System.out.println("Enter row:");
+            row = sc.nextInt();
+            sc.nextLine();
+            System.out.println("Enter column:");
+            col = sc.nextInt();
+            sc.nextLine();
+            if ((row < 0) || (col < 0) || (row > 7) || (col > 7)) {
+                System.out.println("Error: Enter a valid position.");
+                error = true;
+            }
+        } while (error);
+        String pipeType = "";
+        do {
+            error = false;
+            System.out.println("Select pipe type: \n 1. = \n 2. || \n 3. o");
+            int type = sc.nextInt();
+            sc.nextLine();
+            switch (type) {
+                case 1 -> pipeType = "=";
+                case 2 -> pipeType = "||";
+                case 3 -> pipeType = "o";
+                default -> {
+                    error = true;
+                    System.out.println("Invalid option, try again!");
+                    sc.nextLine();
+                }
+            } 
+        } while (error);
         String msg = controller.addPipe(row, col, pipeType);
         System.out.println(msg);
     }
 
     public void simulate(){
         String msg = controller.simulate();
+        if (!msg.equals("The solution is incorrect.")){
+            gameOver = true;
+        }
         System.out.println(msg);
     }
 
-    public void viewScore(){
-
+    public void viewScores(){
+        String msg = controller.viewScores();
+        System.out.println(msg);
     }
 
 }

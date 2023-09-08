@@ -31,14 +31,18 @@ public class LinkedList {
         return null;
     }
 
-
     public void clear() {
-        while (head != null) {
-            Node next = head.getNext();
-            head.setNext(null);
-            head = next;
-        }
+        head = clear(head);
         tail = null;
+    }
+
+    private Node clear(Node current) {
+        if (current == null) {
+            return null;
+        }
+        Node next = current.getNext();
+        current.setNext(null);
+        return clear(next);
     }
 
     public Node getHead() {
