@@ -25,7 +25,7 @@ public class Main {
             System.out.println("--Select an option-");
             System.out.println("1: New game........");
             System.out.println("2: View scores.....");
-            System.out.println("0: Exit............");
+            System.out.println("3: Exit............");
             System.out.println("-------------------");
             option = sc.nextInt();
             sc.nextLine();
@@ -38,13 +38,13 @@ public class Main {
                     System.out.println("Press Enter to return to the menu...");
                     sc.nextLine();
                     break;
-                case 0:
+                case 3:
                     break;
                 default:
                     System.out.println("Invalid option, try again!");
                     sc.nextLine();
             }
-        } while (option!=0);
+        } while (option!=3);
     }
 
     public void newGame(){
@@ -63,7 +63,7 @@ public class Main {
             System.out.println("-Select an option-");
             System.out.println("1: Add pipe.......");
             System.out.println("2: Simulate.......");
-            System.out.println("0: Back...........");
+            System.out.println("3: Back...........");
             System.out.println("------------------");
             option = sc.nextInt();
             sc.nextLine();
@@ -78,13 +78,13 @@ public class Main {
                     System.out.println("Press Enter to go back...");
                     sc.nextLine();
                     break;
-                case 0:
+                case 3:
                     break;
                 default:
                     System.out.println("Invalid option, try again!");
                     sc.nextLine();
             }
-        } while (option != 0 && !gameOver);
+        } while (option != 3 && !gameOver);
     }
 
     public void addPipe(){
@@ -106,13 +106,14 @@ public class Main {
         String pipeType = "";
         do {
             error = false;
-            System.out.println("Select pipe type: \n 1. = \n 2. || \n 3. o");
+            System.out.println("Select pipe type: \n 1. = \n 2. || \n 3. o  \n 4. X");
             int type = sc.nextInt();
             sc.nextLine();
             switch (type) {
                 case 1 -> pipeType = "=";
                 case 2 -> pipeType = "||";
                 case 3 -> pipeType = "o";
+                case 4 -> pipeType = "X";
                 default -> {
                     error = true;
                     System.out.println("Invalid option, try again!");

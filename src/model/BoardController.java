@@ -18,6 +18,7 @@ public class BoardController {
     }
 
     public void newGame(String nickname){
+
         User user = searchUser(nickname);
         if(user != null){
             currentUser = user;
@@ -94,9 +95,10 @@ public class BoardController {
             finalTime = Calendar.getInstance();
             int seconds = calculateTime(finalTime);
             int score = calculateScore(seconds, currentUser.getPipesNumber());
+            boolean flag = false;
             if (score > currentUser.getScore()){
                 currentUser.setScore(score);
-                if (!scoreTable.searchUserInBST(currentUser.getNickname())){
+                if (scoreTable.searchUserInBST(currentUser.getNickname())==flag){
                     scoreTable.addNode(currentUser);
                 } else {
                     scoreTable.deleteNode(currentUser.getNickname());

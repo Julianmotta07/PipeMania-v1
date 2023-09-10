@@ -46,21 +46,29 @@ public class BST {
         }
     }
 
-    //CORREGIR ESTE MÉTODO
     public boolean searchUserInBST(String nickname){
         return searchUserInBST(root, nickname);
     }
 
     private boolean searchUserInBST(BSTNode pointer, String nickname){
+
         if(pointer == null){
+
             return false;
+
         }
         if (pointer.getUser().getNickname().compareTo(nickname) > 0) {
+
             return searchUserInBST(pointer.getLeft(), nickname);
+
         } else if (pointer.getUser().getNickname().compareTo(nickname)< 0){
+
             return searchUserInBST(pointer.getRight(), nickname);
+
         } else {
+
             return true;
+
         }
     }
 
