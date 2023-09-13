@@ -57,7 +57,7 @@ public class BST {
         }
         if (pointer.getUser().getNickname().compareTo(nickname) > 0) {
             return searchUserInBST(pointer.getLeft(), nickname);
-        } else if (pointer.getUser().getNickname().compareTo(nickname)< 0){
+        } else if (pointer.getUser().getNickname().compareTo(nickname) < 0){
             return searchUserInBST(pointer.getRight(), nickname);
         } else {
             return true;
