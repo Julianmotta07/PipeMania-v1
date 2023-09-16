@@ -4,7 +4,7 @@ import java.util.*;
 public class BoardController {
 
     private ArrayList<User> users;
-    private LinkedList list;
+    private LinkedList board;
     private User currentUser;
     private Node fountain;
     private Calendar startTime;
@@ -13,11 +13,12 @@ public class BoardController {
 
     public BoardController() {
         users= new ArrayList<>();
-        list = new LinkedList();
+        board = new LinkedList();
         scoreTable = new BST();
     }
 
     public void newGame(String nickname){
+
         User user = searchUser(nickname);
         if(user != null){
             currentUser = user;
@@ -25,7 +26,7 @@ public class BoardController {
             currentUser = new User(nickname);
             users.add(currentUser);
         }
-        list.clear();
+        board.clear();
         currentUser.setPipesNumber(0);
         for (int i = 0; i < 8; i++){
             for (int j = 0; j < 8; j++){
@@ -33,7 +34,7 @@ public class BoardController {
                 pos[0] = i;
                 pos[1] = j;
                 Node node = new Node(pos);
-                list.addNodeAtTail(node);
+                board.addNodeAtTail(node);
             }
         }
         //Initialize time
@@ -42,30 +43,31 @@ public class BoardController {
         int[] pos = new int[2];
         pos[0] = (int)(Math.random() * 8);
         pos[1] = (int)(Math.random() * 8);
-        fountain = list.findNode(pos);
+        fountain = board.findNode(pos);
         Node drain;
         do {
             pos[0] = (int)(Math.random() * 8);
             pos[1] = (int)(Math.random() * 8);
-            drain = list.findNode(pos);
+            drain = board.findNode(pos);
         } while (fountain == drain);
         fountain.setCharacter("F");
         drain.setCharacter("D");
     }
 
-    public String printBoard(){
-        return printBoard(list.getHead());
+    public String printBoard() {
+        StringBuilder sb = new StringBuilder();
+        return printBoard(board.getHead(), sb);
     }
 
-    private String printBoard(Node pointer) {
-        StringBuilder boardString = new StringBuilder();
+    private String printBoard(Node pointer, StringBuilder boardString) {
         if (pointer != null) {
+            boardString.append(pointer.getCharacter());
             if (pointer.getPosition()[1] == 7) {
-                boardString.append(pointer.getCharacter()).append("\n");
+                boardString.append("\n");
             } else {
-                boardString.append(pointer.getCharacter()).append("  ");
+                boardString.append("  ");
             }
-            boardString.append(printBoard(pointer.getNext()));
+            printBoard(pointer.getNext(), boardString);
         }
         return boardString.toString();
     }
@@ -73,13 +75,20 @@ public class BoardController {
     public String addPipe(int row, int col, String pipeType){
         String msg = "Added pipe!";
         int[] pos = {row, col};
-        Node node = list.findNode(pos);
+        Node node = board.findNode(pos);
         if (node != null){
             if (node.getCharacter().equals("D") || node.getCharacter().equals("F")){
                 msg = "Error: You can't change this item.";
             } else {
                 if (node.getCharacter().equals("X")){
-                    currentUser.setPipesNumber(currentUser.getPipesNumber() + 1);
+                    if (!pipeType.equals("X")){
+                        currentUser.setPipesNumber(currentUser.getPipesNumber() + 1);
+                    } else {
+                        msg = "Error: you can't remove this item.";
+                    }
+                } else if (pipeType.equals("X")){
+                    currentUser.setPipesNumber(currentUser.getPipesNumber() - 1);
+                    msg = "Removed pipe!";
                 }
                 node.setCharacter(pipeType);
             }
@@ -94,12 +103,15 @@ public class BoardController {
             finalTime = Calendar.getInstance();
             int seconds = calculateTime(finalTime);
             int score = calculateScore(seconds, currentUser.getPipesNumber());
-            if (score > currentUser.getScore()){
+            User user = scoreTable.searchUserInBST(currentUser.getScore());
+            if (user == null){
                 currentUser.setScore(score);
-                if (!scoreTable.searchUserInBST(currentUser.getNickname())){
-                    scoreTable.addNode(currentUser);
-                } else {
-                    scoreTable.deleteNode(currentUser.getNickname());
+                scoreTable.addNode(currentUser);
+            } else {
+                double temp = user.getScore();
+                if (score > currentUser.getScore()){
+                    scoreTable.deleteNode(temp);
+                    currentUser.setScore(score);
                     scoreTable.addNode(currentUser);
                 }
             }
@@ -139,7 +151,7 @@ public class BoardController {
             int[] pos = {current.getPosition()[0], current.getPosition()[1] + 1};
             String rightDirection = pos[0] + "," + pos[1];
             if (!exploredDirections.contains(rightDirection)) {
-                found = findRoute(list.findNode(pos), currentPipe, exploredDirections, "right");
+                found = findRoute(board.findNode(pos), currentPipe, exploredDirections, "right");
             }
         }
 
@@ -147,7 +159,7 @@ public class BoardController {
             int[] pos = {current.getPosition()[0], current.getPosition()[1] - 1};
             String leftDirection = pos[0] + "," + pos[1];
             if (!exploredDirections.contains(leftDirection)) {
-                found = findRoute(list.findNode(pos), currentPipe, exploredDirections, "left");
+                found = findRoute(board.findNode(pos), currentPipe, exploredDirections, "left");
             }
         }
 
@@ -155,7 +167,7 @@ public class BoardController {
             int[] pos = {current.getPosition()[0] - 1, current.getPosition()[1]};
             String upDirection = pos[0] + "," + pos[1];
             if (!exploredDirections.contains(upDirection)) {
-                found = findRoute(list.findNode(pos), currentPipe, exploredDirections, "up");
+                found = findRoute(board.findNode(pos), currentPipe, exploredDirections, "up");
             }
         }
 
@@ -163,7 +175,7 @@ public class BoardController {
             int[] pos = {current.getPosition()[0] + 1, current.getPosition()[1]};
             String downDirection = pos[0] + "," + pos[1];
             if (!exploredDirections.contains(downDirection)) {
-                found = findRoute(list.findNode(pos), currentPipe, exploredDirections, "down");
+                found = findRoute(board.findNode(pos), currentPipe, exploredDirections, "down");
             }
         }
 

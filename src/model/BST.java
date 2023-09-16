@@ -34,95 +34,98 @@ public class BST {
     public String getScores() {
         StringBuilder sb = new StringBuilder();
         sb.append("Score table:").append("\n");
-        getScores(root, sb);
-        return sb.toString();
+        return getScores(root, sb);
     }
 
-    private void getScores(BSTNode pointer, StringBuilder sb) {
+    private String getScores(BSTNode pointer, StringBuilder sb) {
         if (pointer != null) {
             getScores(pointer.getRight(), sb);
             sb.append(pointer.getUser().getNickname()).append(": ").append(pointer.getUser().getScore()).append("\n");
             getScores(pointer.getLeft(), sb);
         }
+        return sb.toString();
     }
 
-    //CORREGIR ESTE MÉTODO
-    public boolean searchUserInBST(String nickname){
-        return searchUserInBST(root, nickname);
+    public User searchUserInBST(double value){
+        return searchUserInBST(root, value);
     }
 
-    private boolean searchUserInBST(BSTNode pointer, String nickname){
+    private User searchUserInBST(BSTNode pointer, double value){
         if(pointer == null){
-            return false;
+            return null;
         }
-        if (pointer.getUser().getNickname().compareTo(nickname) > 0) {
-            return searchUserInBST(pointer.getLeft(), nickname);
-        } else if (pointer.getUser().getNickname().compareTo(nickname) < 0){
-            return searchUserInBST(pointer.getRight(), nickname);
+        if (pointer.getUser().getScore() > value) {
+            return searchUserInBST(pointer.getLeft(), value);
+        } else if (pointer.getUser().getScore() < value){
+            return searchUserInBST(pointer.getRight(), value);
         } else {
-            return true;
+            return pointer.getUser();
         }
     }
 
-    public void deleteNode(String nickname){
-        if (root.getLeft() == null && root.getRight() == null && root.getUser().getNickname().equals(nickname)){
-            root = null;
+    public void deleteNode(double value){
+        if (root.getUser().getScore() == value) {
+            if (root.getLeft() == null) {
+                root = root.getRight();
+            } else if (root.getRight() == null) {
+                root = root.getLeft();
+            } else {
+                BSTNode successor = getSuccessor(value);
+                root.setUser(successor.getUser());
+                deleteNode(root, root.getRight(), successor.getUser().getScore());
+            }
         } else {
-            deleteNode(null, root, nickname);
+            deleteNode(null, root, value);
         }
     }
 
-    private void deleteNode(BSTNode parent, BSTNode pointer, String nickname){
+    private void deleteNode(BSTNode parent, BSTNode pointer, double value){
         if(pointer==null){
             return;
         }
-        if (pointer.getUser().getNickname().compareTo(nickname) > 0) {
-            deleteNode(pointer, pointer.getLeft(), nickname);
-        } else if (pointer.getUser().getNickname().compareTo(nickname) < 0){
-            deleteNode(pointer, pointer.getRight(), nickname);
+        if (pointer.getUser().getScore() > value) {
+            deleteNode(pointer, pointer.getLeft(), value);
+        } else if (pointer.getUser().getScore() < value){
+            deleteNode(pointer, pointer.getRight(), value);
         }
         else {
-            if (pointer.getLeft()==null && pointer.getRight()==null){
-                if(parent.getLeft()==pointer){
+            if (pointer.getLeft() == null && pointer.getRight() == null){
+                if (parent.getLeft() == pointer){
                     parent.setLeft(null);
                 } else {
                     parent.setRight(null);
                 }
-            }
-            else if(pointer.getRight()==null){
-            parent.setRight(pointer.getLeft());
-            pointer.setLeft(null);
-            }
-            else if (pointer.getLeft()==null) {
+            } else if (pointer.getRight() == null){
+                parent.setRight(pointer.getLeft());
+                pointer.setLeft(null);
+            } else if (pointer.getLeft() == null) {
                 parent.setLeft(pointer.getRight());
                 pointer.setRight(null);
-            }
-            else {
-                BSTNode successor = getSuccessor(nickname);
+            } else {
+                BSTNode successor = getSuccessor(value);
                 pointer.setUser(successor.getUser());
-                deleteNode(pointer, pointer.getRight(), successor.getUser().getNickname());
+                deleteNode(pointer, pointer.getRight(), successor.getUser().getScore());
             }
         }
     }
 
-    public BSTNode getSuccessor(String value){
+    public BSTNode getSuccessor(double value){
         return getSuccessor(root, null, value);
     }
 
-    private BSTNode getSuccessor(BSTNode pointer, BSTNode parent, String nickname){
+    private BSTNode getSuccessor(BSTNode pointer, BSTNode parent, double value){
         if(pointer==null){
             return null;
         }
-        if(pointer.getUser().getNickname().compareTo(nickname) == 0){
+        if(pointer.getUser().getScore() == value){
             if (pointer.getRight()!=null) return getMin(pointer.getRight());
             else return parent;
         }
-        if(pointer.getUser().getNickname().compareTo(nickname) > 0) {
-            return getSuccessor(pointer.getLeft(), pointer, nickname);
+        if(pointer.getUser().getScore() > value) {
+            return getSuccessor(pointer.getLeft(), pointer, value);
         } else {
-            return getSuccessor(pointer.getRight(), parent, nickname);
+            return getSuccessor(pointer.getRight(), parent, value);
         }
-
     }
 
     private BSTNode getMin(BSTNode pointer) {
