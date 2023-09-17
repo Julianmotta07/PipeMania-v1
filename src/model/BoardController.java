@@ -18,7 +18,6 @@ public class BoardController {
     }
 
     public void newGame(String nickname){
-
         User user = searchUser(nickname);
         if(user != null){
             currentUser = user;
@@ -147,7 +146,7 @@ public class BoardController {
 
         boolean found = false;
 
-        if (current.getNext() != null && !found && !currentDirection.equals("left")) {
+        if (current.getNext() != null && !currentDirection.equals("left")) {
             int[] pos = {current.getPosition()[0], current.getPosition()[1] + 1};
             String rightDirection = pos[0] + "," + pos[1];
             if (!exploredDirections.contains(rightDirection)) {

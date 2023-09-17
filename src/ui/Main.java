@@ -21,12 +21,12 @@ public class Main {
     public void menu(){
         int option;
         do{
-            System.out.println("WELCOME TO THE MENU");
-            System.out.println("--Select an option-");
-            System.out.println("1: New game........");
-            System.out.println("2: View scores.....");
-            System.out.println("3: Exit............");
-            System.out.println("-------------------");
+            System.out.println("WELCOME TO PIPE MANIA!");
+            System.out.println("---Select an option---");
+            System.out.println("1: New game...........");
+            System.out.println("2: View scores........");
+            System.out.println("3: Exit...............");
+            System.out.println("----------------------");
             option = sc.nextInt();
             sc.nextLine();
             switch(option){
